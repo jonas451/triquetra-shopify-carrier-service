@@ -15,6 +15,7 @@ app.post("/carrier-service", (req, res) => {
   const rates = [
     {
       service_name: "Shipping 1",
+      description: "Fast and reliable shipping",
       service_code: "SHIPPING_1",
       total_price: "7000", // Price in cents
       currency: "USD",
