@@ -11,10 +11,21 @@ app.post("/carrier-service", (req, res) => {
   console.log("Shopify Request Received:");
   console.log(JSON.stringify(req.body, null, 2));
 
-  // For now send an empty rates array (to avoid Shopify errors)
-  return res.json({
-    rates: []
-  });
+  // Always return "Shipping 1" with $70
+  const rates = [
+    {
+      service_name: "Shipping 1",
+      service_code: "SHIPPING_1",
+      total_price: "7000", // Price in cents
+      currency: "USD",
+      min_delivery_date: new Date().toISOString(),
+      max_delivery_date: new Date(
+        Date.now() + 2 * 24 * 60 * 60 * 1000
+      ).toISOString(), // +2 days
+    },
+  ];
+
+  return res.json({ rates });
 });
 
 const PORT = process.env.PORT || 3000;
