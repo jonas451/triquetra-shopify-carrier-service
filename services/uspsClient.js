@@ -49,7 +49,7 @@ export async function getUspsPrice(requestBody) {
 
   const url = `${process.env.USPS_API_BASE}/prices/v3/base-rates/search`;
 
-  const response = await axios.post(url, requestBody, {s
+  const response = await axios.post(url, requestBody, {
     headers: {
       Authorization: `Bearer ${token}`,
       "Content-Type": "application/json",
