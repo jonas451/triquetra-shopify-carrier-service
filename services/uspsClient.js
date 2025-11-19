@@ -20,16 +20,14 @@ async function getAccessToken() {
   params.append("grant_type", "client_credentials");
   params.append("scope", "prices");
 
-  const authHeader =
-    "Basic " +
-    Buffer.from(
-      `${process.env.USPS_CLIENT_ID}:${process.env.USPS_CLIENT_SECRET}`
-    ).toString("base64");
+  // ===== CHANGED: add client_id and client_secret in body =====
+  params.append("client_id", process.env.USPS_CLIENT_ID);
+  params.append("client_secret", process.env.USPS_CLIENT_SECRET);
+  // ===== CHANGED: removed Authorization header =====
 
-  const response = await axios.post(tokenUrl, params, {
+  const response = await axios.post(tokenUrl, params.toString(), {  // ===== CHANGED: send as string =====
     headers: {
-      Authorization: authHeader,
-      "Content-Type": "application/x-www-form-urlencoded",
+      "Content-Type": "application/x-www-form-urlencoded",       // ===== CHANGED: only Content-Type =====
     },
   });
 
