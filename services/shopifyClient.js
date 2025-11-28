@@ -1,46 +1,39 @@
 import axios from "axios";
 
-export async function fetchVariantDimensions(variantId) {
-  const url = `https://${process.env.SHOPIFY_STORE_DOMAIN}/admin/api/2024-01/graphql.json`;
+let cachedToken = null;
+let tokenExpiresAt = null;
 
-  const query = `
-    query VariantDimensions($id: ID!) {
-      productVariant(id: $id) {
-        id
-        length: metafield(namespace: "custom", key: "length") {
-          value
-        }
-        width: metafield(namespace: "custom", key: "width") {
-          value
-        }
-        height: metafield(namespace: "custom", key: "height") {
-          value
-        }
-      }
-    }
-  `;
+export async function getShopifyAccessToken() {
+  const now = Date.now();
 
-  const response = await axios.post(
-    url,
-    { query, variables: { id: `gid://shopify/ProductVariant/${variantId}` } },
-    {
-      headers: {
-        "X-Shopify-Access-Token":
-          process.env.SHOPIFY_ADMIN_API_ACCESS_TOKEN,
-        "Content-Type": "application/json",
-      },
-    }
-  );
+  // Reuse valid token
+  if (cachedToken && tokenExpiresAt && now < tokenExpiresAt) {
+    return cachedToken;
+  }
 
-  const variant = response.data.data.productVariant;
+  const url = `https://${process.env.SHOPIFY_STORE_DOMAIN}/admin/oauth/access_token`;
 
-  // Convert metafield values to numbers (or null)
-  const length = variant.length?.value ? Number(variant.length.value) : null;
-  const width = variant.width?.value ? Number(variant.width.value) : null;
-  const height = variant.height?.value ? Number(variant.height.value) : null;
+  const payload = {
+    client_id: process.env.SHOPIFY_CLIENT_ID,
+    client_secret: process.env.SHOPIFY_CLIENT_SECRET,
+    grant_type: "client_credentials"
+  };
 
-  console.log("📦 Variant Dimensions:");
-  console.log({ variantId, length, width, height });
+  try {
+    const response = await axios.post(url, payload, {
+      headers: { "Content-Type": "application/json" }
+    });
 
-  return { length, width, height };
+    const { access_token, expires_in } = response.data;
+
+    cachedToken = access_token;
+    tokenExpiresAt = now + expires_in * 1000;
+
+    console.log("Shopify Admin Access Token retrieved.");
+    return cachedToken;
+
+  } catch (err) {
+    console.error("Shopify OAuth Error:", err.response?.data || err.message);
+    throw new Error("Failed to fetch Shopify Admin API token");
+  }
 }
