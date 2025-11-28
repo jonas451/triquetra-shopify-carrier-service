@@ -67,9 +67,8 @@ export async function getUspsPrice(requestBody) {
     });
 
     const price =
-      response?.data?.prices?.[0]?.totalBasePrice?.amount ??
-      response?.data?.prices?.[0]?.totalPrice?.amount ??
-      null;
+      response?.rates?.[0]?.price ??
+      0;
 
     if (!price) {
       console.error("USPS Price Response:", response.data);
