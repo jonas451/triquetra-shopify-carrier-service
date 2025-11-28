@@ -1,5 +1,5 @@
 import { getUspsPrice } from "./uspsClient.js";
-import { fetchVariantDimensions } from "./shopifyClient.js";
+import { fetchVariantDimensions } from "./fetchVariantDimensions.js";
 
 export async function getUspsRate(rateRequest) {
   const { items, origin, destination } = rateRequest;
