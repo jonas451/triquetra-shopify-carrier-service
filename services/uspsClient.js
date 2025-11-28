@@ -37,7 +37,6 @@ async function getAccessToken() {
     tokenExpiresAt = now + expires_in * 1000;
 
     console.log("Access Token retrieved successfully.");
-    console.log(cachedToken)
     return cachedToken;
   } catch (error) {
     if (error.response) {
