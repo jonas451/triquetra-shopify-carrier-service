@@ -19,8 +19,7 @@ async function getAccessToken() {
   const data = {
     grant_type: "client_credentials",
     client_id: process.env.USPS_CLIENT_ID,
-    client_secret: process.env.USPS_CLIENT_SECRET,
-    scope: "prices",
+    client_secret: process.env.USPS_CLIENT_SECRET
   };
 
   try {
