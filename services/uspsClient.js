@@ -76,7 +76,7 @@ export async function getUspsPrice(requestBody) {
       throw new Error("No usable price returned by USPS");
     }
 
-    return Number(price);
+    return Number(finalPrice);
   } catch (error) {
     if (error.response) {
       console.error("USPS Price API Error:", error.response.status, error.response.data);
