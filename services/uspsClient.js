@@ -9,35 +9,43 @@ let tokenExpiresAt = null;
 async function getAccessToken() {
   const now = Date.now();
 
+  // Reuse valid token
   if (cachedToken && tokenExpiresAt && now < tokenExpiresAt) {
     return cachedToken;
   }
 
   const tokenUrl = `${process.env.USPS_API_BASE}/oauth2/v3/token`;
 
-  const form = new URLSearchParams();
-  form.append("grant_type", "client_credentials");
-  form.append("client_id", process.env.USPS_CLIENT_ID);
-  form.append("client_secret", process.env.USPS_CLIENT_SECRET);
-  form.append("scope", "prices");
+  const data = {
+    grant_type: "client_credentials",
+    client_id: process.env.USPS_CLIENT_ID,
+    client_secret: process.env.USPS_CLIENT_SECRET,
+    scope: "prices",
+  };
 
   try {
-    const response = await axios.post(tokenUrl, form, {
+    const response = await axios.post(tokenUrl, data, {
       headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+        "Content-Type": "application/json",
         Accept: "application/json",
       },
     });
 
     const { access_token, expires_in } = response.data;
 
+    // Cache token with expiry
     cachedToken = access_token;
     tokenExpiresAt = now + expires_in * 1000;
 
     console.log("Access Token retrieved successfully.");
+    console.log(cachedToken)
     return cachedToken;
   } catch (error) {
-    console.error("USPS OAuth Error:", error.response?.data || error.message);
+    if (error.response) {
+      console.error("USPS OAuth Error:", error.response.status, error.response.data);
+    } else {
+      console.error("Request Error:", error.message);
+    }
     throw new Error("Failed to retrieve USPS access token");
   }
 }
