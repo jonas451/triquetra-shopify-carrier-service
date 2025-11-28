@@ -66,13 +66,14 @@ export async function getUspsPrice(requestBody) {
       },
     });
 
-    const price =
-      response?.rates?.[0]?.price ??
-      0;
+    const totalBasePrice = response.data.totalBasePrice;
+    const ratePrice = response.data.rates?.[0]?.price;
 
-    if (!price) {
+    const finalPrice = totalBasePrice ?? ratePrice ?? null;
+
+    if (finalPrice === null) {
       console.error("USPS Price Response:", response.data);
-      throw new Error("No price returned by USPS");
+      throw new Error("No usable price returned by USPS");
     }
 
     return Number(price);
