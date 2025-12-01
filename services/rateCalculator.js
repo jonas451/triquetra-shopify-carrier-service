@@ -14,8 +14,7 @@ export async function getUspsRate(rateRequest) {
     0
   );
 
-    const weightLb = Math.max(0.1, totalGrams);
-  //const weightLb = Math.max(0.1, totalGrams / 453.592);
+  const weightLb = Math.max(0.1, totalGrams / 453.592);
   console.log("Total Weight (lb):", weightLb.toFixed(2));
 
   // -----------------------------------------
